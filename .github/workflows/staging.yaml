@@ -1,7 +1,7 @@
 name: Staging-CI
 on: [push]
 jobs:
-  staging-deploy:
+  stage-ci:
     if: ${{ github.ref == 'refs/heads/stage' }}
     runs-on: ubuntu-latest
     env:
@@ -25,3 +25,59 @@ jobs:
       - run: sed -i.bak "s/{APP_HOST}/payments.staging.goodoverlord.com/g" deploy/deployment.yaml
       - run: cat deploy/deployment.yaml
       - run: echo $APP_HOST
+  qa-ci:
+    if: ${{ github.ref == 'refs/heads/qa' }}
+    runs-on: ubuntu-latest
+    env:
+      K8_NAMESPACE: test
+      K8_POD_REPLICAS: 2
+      RELEASE_TAG: qa
+      APP_ENVIRONMENT: test
+      APP_HOST: test
+    steps:
+      - run: export RELEASE_TAG=$GITHUB_ACTION
+      - name: Check out repository code
+        uses: actions/checkout@v2
+      - run: ls
+      - run: mv deploy/deployment.yaml.dist deploy/deployment.yaml
+      - run: mv deploy/qa/configmap.yaml deploy/configmap.yaml
+      - run: mv deploy/qa/service.yaml deploy/service.yaml
+      - run: sed -i.bak "s/{K8_NAMESPACE}/default/g" deploy/deployment.yaml
+      - run: sed -i.bak "s/{K8_POD_REPLICAS}/1/g" deploy/deployment.yaml
+      - run: sed -i.bak "s/{RELEASE_TAG}/$RELEASE_TAG/g" deploy/deployment.yaml
+      - run: sed -i.bak "s/{APP_ENVIRONMENT}/qa/g" deploy/deployment.yaml
+      - run: sed -i.bak "s/{APP_HOST}/payments.qa.goodoverlord.com/g" deploy/deployment.yaml
+      - run: cat deploy/deployment.yaml
+      - run: echo $APP_HOST
+  prod-ci:
+    runs-on: ubuntu-latest
+    if: ${{ github.ref == 'refs/heads/main' }}
+    env:
+      K8_NAMESPACE: test
+      K8_POD_REPLICAS: 2
+      RELEASE_TAG: demo
+      APP_ENVIRONMENT: test
+      APP_HOST: test
+    steps:
+      - run: export RELEASE_TAG=$GITHUB_ACTION
+      - name: Check out repository code
+        uses: actions/checkout@v2
+      - run: ls
+      # - run: cp deploy/demo/* deploy/demo/ -rf
+      # - run: cp deploy/prod/* deploy/prod/ -rf
+      - run: cp deploy/deployment.yaml.dist deploy/demo/deployment.yaml
+      - run: sed -i.bak "s/{K8_NAMESPACE}/default/g" deploy/demo/deployment.yaml
+      - run: sed -i.bak "s/{K8_POD_REPLICAS}/1/g" deploy/demo/deployment.yaml
+      - run: sed -i.bak "s/{RELEASE_TAG}/$RELEASE_TAG/g" deploy/demo/deployment.yaml
+      - run: sed -i.bak "s/{APP_ENVIRONMENT}/demo/g" deploy/demo/deployment.yaml
+      - run: sed -i.bak "s/{APP_HOST}/payments.demo.goodoverlord.com/g" deploy/demo/deployment.yaml
+      - run: cat deploy/demo/deployment.yaml
+      - run: echo $APP_HOST
+      - run: cp deploy/deployment.yaml.dist deploy/prod/deployment.yaml
+      - run: sed -i.bak "s/{RELEASE_TAG}/$RELEASE_TAG/g" deploy/prod/deployment.yaml
+      - run: sed -i.bak "s/{K8_NAMESPACE}/default/g" deploy/prod/deployment.yaml
+      - run: sed -i.bak "s/{K8_POD_REPLICAS}/2/g" deploy/prod/deployment.yaml
+      - run: sed -i.bak "s/{APP_ENVIRONMENT}/prod/g" deploy/prod/deployment.yaml
+      - run: sed -i.bak "s/{APP_HOST}/payments.goodlord.co/g" deploy/prod/deployment.yaml
+      - run: sed -i.bak "s/{RELEASE_TAG}/$RELEASE_TAG/g" deploy/prod/cron-*
+      - run: echo $RELEASE_TAG > deploy/version
