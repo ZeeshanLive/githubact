@@ -129,7 +129,7 @@ jobs:
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
       - name: install-aws-cli-action
         uses: unfor19/install-aws-cli-action@v1
-        run: |
-          aws s3 ls 
+      - run: aws --version
+        shell: bash
 
 
