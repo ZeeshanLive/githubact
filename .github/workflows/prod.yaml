@@ -1,0 +1,34 @@
+name: prod-CI
+on: [push]
+jobs:
+  demo-deploy:
+    runs-on: ubuntu-latest
+    env:
+      K8_NAMESPACE: test
+      K8_POD_REPLICAS: 2
+      RELEASE_TAG: demo
+      APP_ENVIRONMENT: test
+      APP_HOST: test
+    steps:
+      - run: export RELEASE_TAG=$GITHUB_ACTION
+      - name: Check out repository code
+        uses: actions/checkout@v2
+      - run: ls
+      - run: mkdir deploy/demo && cp deploy/demo/*
+      - run: mkdir ../deploy/prod && cp deploy/prod/*
+      - run: cp deploy/deployment.yaml.dist deploy/demo/deployment.yaml
+      - run: sed -i.bak "s/{K8_NAMESPACE}/default/g" deploy/deployment.yaml
+      - run: sed -i.bak "s/{K8_POD_REPLICAS}/1/g" deploy/deployment.yaml
+      - run: sed -i.bak "s/{RELEASE_TAG}/$RELEASE_TAG/g" deploy/deployment.yaml
+      - run: sed -i.bak "s/{APP_ENVIRONMENT}/demo/g" deploy/deployment.yaml
+      - run: sed -i.bak "s/{APP_HOST}/payments.demo.goodoverlord.com/g" deploy/deployment.yaml
+      - run: cat deploy/deployment.yaml
+      - run: echo $APP_HOST
+      - run: cp deploy/deployment.yaml.dist deploy/prod/deployment.yaml
+      - run: sed -i.bak "s/{RELEASE_TAG}/$RELEASE_TAG/g" deploy/prod/deployment.yaml
+      - run: sed -i.bak "s/{K8_NAMESPACE}/default/g" deploy/prod/deployment.yaml
+      - run: sed -i.bak "s/{K8_POD_REPLICAS}/2/g" deploy/prod/deployment.yaml
+      - run: sed -i.bak "s/{APP_ENVIRONMENT}/prod/g" deploy/prod/deployment.yaml
+      - run: sed -i.bak "s/{APP_HOST}/payments.goodlord.co/g" deploy/prod/deployment.yaml
+      - run: sed -i.bak "s/{RELEASE_TAG}/$RELEASE_TAG/g" ../deploy/prod/cron-*
+      - run: echo $RELEASE_TAG > ../deploy/version
