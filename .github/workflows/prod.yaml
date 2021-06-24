@@ -14,6 +14,8 @@ jobs:
       - name: Check out repository code
         uses: actions/checkout@v2
       - run: ls
+      - run: rm -rf deploy/demo/*
+      - run: rm -rf deploy/prod/*
       - run: cp deploy/demo/* deploy/demo/
       - run: cp deploy/prod/* deploy/prod/
       - run: cp deploy/deployment.yaml.dist deploy/demo/deployment.yaml
