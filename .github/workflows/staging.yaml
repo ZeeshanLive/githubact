@@ -15,6 +15,7 @@ jobs:
         uses: actions/checkout@v2
       - run: ls
       - run: cd deploy
+      - run: ls
       - run: mv deployment.yaml.dist ../deploy/deployment.yaml
       - run: mv deploy/staging/configmap.yaml ../deploy/configmap.yaml
       - run: mv deploy/staging/service.yaml ../deploy/service.yaml
