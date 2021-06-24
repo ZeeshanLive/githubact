@@ -81,3 +81,17 @@ jobs:
       - run: sed -i.bak "s/{APP_HOST}/payments.goodlord.co/g" deploy/prod/deployment.yaml
       - run: sed -i.bak "s/{RELEASE_TAG}/$RELEASE_TAG/g" deploy/prod/cron-*
       - run: echo $RELEASE_TAG > deploy/version
+  self-hosted:
+    runs-on: gem
+    env:
+      K8_NAMESPACE: test
+      K8_POD_REPLICAS: 2
+      RELEASE_TAG: demo
+      APP_ENVIRONMENT: test
+      APP_HOST: test
+    steps:
+      - run: export RELEASE_TAG=$GITHUB_ACTION
+      - name: Check out repository code
+        uses: actions/checkout@v2
+      - run: echo $K8_NAMESPACE
+
