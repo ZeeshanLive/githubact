@@ -15,10 +15,11 @@ jobs:
         uses: actions/checkout@v2
       - run: ls
       - run: mv deploy/deployment.yaml.dist deploy/deployment.yaml
-      - run: mv deploy/staging/configmap.yaml ../deploy/configmap.yaml
-      - run: mv deploy/staging/service.yaml ../deploy/service.yaml
-      - run: sed -i.bak "s/$K8_NAMESPACE/default/g" ../deploy/deployment.yaml
-      - run: sed -i.bak "s/$K8_POD_REPLICAS/1/g" ../deploy/deployment.yaml
-      - run: sed -i.bak "s/$RELEASE_TAG/$RELEASE_TAG/g" ../deploy/deployment.yaml
-      - run: sed -i.bak "s/$APP_ENVIRONMENT/staging/g" ../deploy/deployment.yaml
-      - run: sed -i.bak "s/$APP_HOST/payments.staging.goodoverlord.com/g" ../deploy/deployment.yaml
+      - run: mv deploy/staging/configmap.yaml deploy/configmap.yaml
+      - run: mv deploy/staging/service.yaml deploy/service.yaml
+      - run: sed -i.bak "s/$K8_NAMESPACE/default/g" deploy/deployment.yaml
+      - run: sed -i.bak "s/$K8_POD_REPLICAS/1/g" deploy/deployment.yaml
+      - run: sed -i.bak "s/$RELEASE_TAG/$RELEASE_TAG/g" deploy/deployment.yaml
+      - run: sed -i.bak "s/$APP_ENVIRONMENT/staging/g" deploy/deployment.yaml
+      - run: sed -i.bak "s/$APP_HOST/payments.staging.goodoverlord.com/g" deploy/deployment.yaml
+      - run: cat deploy/deployment.yaml
