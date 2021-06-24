@@ -17,11 +17,11 @@ jobs:
       # - run: cp deploy/demo/* deploy/demo/ -rf
       # - run: cp deploy/prod/* deploy/prod/ -rf
       - run: cp deploy/deployment.yaml.dist deploy/demo/deployment.yaml
-      - run: sed -i.bak "s/{K8_NAMESPACE}/default/g" deploy/deployment.yaml
-      - run: sed -i.bak "s/{K8_POD_REPLICAS}/1/g" deploy/deployment.yaml
-      - run: sed -i.bak "s/{RELEASE_TAG}/$RELEASE_TAG/g" deploy/deployment.yaml
-      - run: sed -i.bak "s/{APP_ENVIRONMENT}/demo/g" deploy/deployment.yaml
-      - run: sed -i.bak "s/{APP_HOST}/payments.demo.goodoverlord.com/g" deploy/deployment.yaml
+      - run: sed -i.bak "s/{K8_NAMESPACE}/default/g" deploy/demo/deployment.yaml
+      - run: sed -i.bak "s/{K8_POD_REPLICAS}/1/g" deploy/demo/deployment.yaml
+      - run: sed -i.bak "s/{RELEASE_TAG}/$RELEASE_TAG/g" deploy/demo/deployment.yaml
+      - run: sed -i.bak "s/{APP_ENVIRONMENT}/demo/g" deploy/demo/deployment.yaml
+      - run: sed -i.bak "s/{APP_HOST}/payments.demo.goodoverlord.com/g" deploy/demo/deployment.yaml
       - run: cat deploy/deployment.yaml
       - run: echo $APP_HOST
       - run: cp deploy/deployment.yaml.dist deploy/prod/deployment.yaml
