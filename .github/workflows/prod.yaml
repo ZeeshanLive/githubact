@@ -14,8 +14,8 @@ jobs:
       - name: Check out repository code
         uses: actions/checkout@v2
       - run: ls
-      #- run: mkdir deploy/demo && cp deploy/demo/*
-      #- run: mkdir deploy/prod && cp deploy/prod/*
+      - run: cp deploy/demo/*
+      - run: cp deploy/prod/*
       - run: cp deploy/deployment.yaml.dist deploy/demo/deployment.yaml
       - run: sed -i.bak "s/{K8_NAMESPACE}/default/g" deploy/deployment.yaml
       - run: sed -i.bak "s/{K8_POD_REPLICAS}/1/g" deploy/deployment.yaml
