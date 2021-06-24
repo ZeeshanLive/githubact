@@ -81,19 +81,19 @@ jobs:
       - run: sed -i.bak "s/{APP_HOST}/payments.goodlord.co/g" deploy/prod/deployment.yaml
       - run: sed -i.bak "s/{RELEASE_TAG}/$RELEASE_TAG/g" deploy/prod/cron-*
       - run: echo $RELEASE_TAG > deploy/version
-  self-hosted:
-    runs-on: gem
-    env:
-      K8_NAMESPACE: test
-      K8_POD_REPLICAS: 2
-      RELEASE_TAG: demo
-      APP_ENVIRONMENT: test
-      APP_HOST: test
-    steps:
-      - run: export RELEASE_TAG=$GITHUB_ACTION
-      - name: Check out repository code
-        uses: actions/checkout@v2
-      - run: echo $K8_NAMESPACE
+        #  self-hosted:
+        #runs-on: gem
+        #env:
+        #K8_NAMESPACE: test
+        #K8_POD_REPLICAS: 2
+        #RELEASE_TAG: demo
+        #APP_ENVIRONMENT: test
+        #APP_HOST: test
+        #steps:
+        #- run: export RELEASE_TAG=$GITHUB_ACTION
+        # - name: Check out repository code
+        #uses: actions/checkout@v2
+        #- run: echo $K8_NAMESPACE
   ecr-login:
     runs-on: ubuntu-latest
     env:
@@ -112,18 +112,20 @@ jobs:
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: us-east-2
+          aws-region: us-west-2
       - name: Login to Amazon ECR
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1
       - name: Build, tag, and push image to Amazon ECR
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          ECR_REPOSITORY: my-ecr-repo
+          ECR_REPOSITORY: test-repo
           IMAGE_TAG: ${{ github.sha }}
         run: |
           echo $ECR_REGISTRY
+          docker pull nginx
+          docker tag nginx $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
           #docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
-          #docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
 
 
