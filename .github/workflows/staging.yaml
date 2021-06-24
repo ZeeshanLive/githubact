@@ -131,5 +131,6 @@ jobs:
         uses: unfor19/install-aws-cli-action@v1
       - run: aws --version
         shell: bash
+      - run: aws s3 ls
 
 
