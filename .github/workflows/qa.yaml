@@ -2,6 +2,7 @@ name: qa-CI
 on: [push]
 jobs:
   qa-deploy:
+    if: ${{ github.ref == 'refs/heads/qa' }}
     runs-on: ubuntu-latest
     env:
       K8_NAMESPACE: test
