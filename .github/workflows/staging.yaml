@@ -13,6 +13,7 @@ jobs:
       - run: export RELEASE_TAG=$GITHUB_ACTION
       - name: Check out repository code
         uses: actions/checkout@v2
+      - run: ls
       - run: cd deploy
       - run: mv deployment.yaml.dist ../deploy/deployment.yaml
       - run: mv deploy/staging/configmap.yaml ../deploy/configmap.yaml
