@@ -94,4 +94,27 @@ jobs:
       - name: Check out repository code
         uses: actions/checkout@v2
       - run: echo $K8_NAMESPACE
+  ecr-login:
+    runs-on: ubuntu-latest
+    env:
+      K8_NAMESPACE: test
+      K8_POD_REPLICAS: 2
+      RELEASE_TAG: demo
+      APP_ENVIRONMENT: test
+      APP_HOST: test
+    steps:
+      - run: export RELEASE_TAG=$GITHUB_ACTION
+      - name: Check out repository code
+        uses: actions/checkout@v2
+      - run: echo $K8_NAMESPACE
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-2
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+
 
