@@ -31,4 +31,4 @@ jobs:
       - run: sed -i.bak "s/{APP_ENVIRONMENT}/prod/g" deploy/prod/deployment.yaml
       - run: sed -i.bak "s/{APP_HOST}/payments.goodlord.co/g" deploy/prod/deployment.yaml
       - run: sed -i.bak "s/{RELEASE_TAG}/$RELEASE_TAG/g" deploy/prod/cron-*
-      - run: echo $RELEASE_TAG > ../deploy/version
+      - run: echo $RELEASE_TAG > deploy/version
