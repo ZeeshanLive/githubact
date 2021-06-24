@@ -1,0 +1,24 @@
+name: Staging-CI
+on: [push]
+jobs:
+  staging-deploy:
+    runs-on: ubuntu-latest
+    env:
+      K8_NAMESPACE: test
+      K8_POD_REPLICAS: 2
+      RELEASE_TAG: staging
+      APP_ENVIRONMENT: test
+      APP_HOST: test
+    steps:
+      - run: export RELEASE_TAG=$GITHUB_ACTION
+      - name: Check out repository code
+        uses: actions/checkout@v2
+        #- run: cd repo
+      - run: mv deploy/deployment.yaml.dist ../deploy/deployment.yaml
+      - run: mv deploy/staging/configmap.yaml ../deploy/configmap.yaml
+      - run: mv deploy/staging/service.yaml ../deploy/service.yaml
+      - run: sed -i.bak "s/$K8_NAMESPACE/default/g" ../deploy/deployment.yaml
+      - run: sed -i.bak "s/$K8_POD_REPLICAS/1/g" ../deploy/deployment.yaml
+      - run: sed -i.bak "s/$RELEASE_TAG/$RELEASE_TAG/g" ../deploy/deployment.yaml
+      - run: sed -i.bak "s/$APP_ENVIRONMENT/staging/g" ../deploy/deployment.yaml
+      - run: sed -i.bak "s/$APP_HOST/payments.staging.goodoverlord.com/g" ../deploy/deployment.yaml

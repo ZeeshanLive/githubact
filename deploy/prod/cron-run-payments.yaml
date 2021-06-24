@@ -1,0 +1,86 @@
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: run-payments
+  namespace: default
+spec:
+  schedule: "*/10 * * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: php
+            image: 639947087795.dkr.ecr.eu-west-2.amazonaws.com/xero-v1:{RELEASE_TAG}
+            imagePullPolicy: Always
+            env:
+            - name: ENVIRONMENT
+              value: prod
+            - name: DEBUG
+              value: "false"
+            - name: PHP_OPCACHE_ENABLED
+              value: "true"
+            - name: PHP_DISPLAY_ERRORS
+              value: "off"
+            - name: PHP_MEMCACHE_SAVE_PATH
+              valueFrom:
+                configMapKeyRef:
+                  name: xero-v1
+                  key: php-memcache-save-path
+            - name: PHP_COOKIE_DOMAIN
+              valueFrom:
+                configMapKeyRef:
+                  name: xero-v1
+                  key: php-cookie-domain
+            - name: DB_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: xero-v1
+                  key: db-host
+            - name: DB_USER
+              valueFrom:
+                configMapKeyRef:
+                  name: xero-v1
+                  key: db-user
+            - name: DB_NAME
+              valueFrom:
+                configMapKeyRef:
+                  name: xero-v1
+                  key: db-name
+            - name: PAYMENT_ALERT_RECIPIENTS
+              valueFrom:
+                configMapKeyRef:
+                  name: xero-v1
+                  key: payment-alert-recipients
+            - name: DB_PASS
+              valueFrom:
+                secretKeyRef:
+                  name: xero-v1
+                  key: xero-db-password
+            - name: AWS_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: xero-v1
+                  key: aws-access-key-id
+            - name: AWS_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: xero-v1
+                  key: aws-secret-access-key
+            - name: XERO_API_CERT_PRIVATE_KEY_PATH
+              value: "/var/www/html/src/Resources/certs/xero_api.pem"
+            - name: XERO_API_CERT_PUBLIC_KEY_PATH
+              value: "/var/www/html/src/Resources/certs/xero_api.cer"
+            - name: XERO_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: xero-v1
+                  key: xero-api-key
+            - name: XERO_API_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: xero-v1
+                  key: xero-api-secret
+            args:
+            - "./scripts/run_payments.sh"
+          restartPolicy: Never

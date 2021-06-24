@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: xero-v1
+  namespace: default
+data:
+  db-host: "aurora-mysql-staging-rds.cluster-cdhr6p0wddvy.eu-west-1.rds.amazonaws.com"
+  db-user: "xero_staging"
+  db-name: "payments_staging"
+  xero-api-key: "QYH4FQOUCEJ1STIJWEBTKKIQJSLEFJ"
+  xero-api-secret: "JPNRF3QRL6XVF70JSGIISSNVZXFW33"
+  php-memcache-save-path: "memcache-xero.staging.svc.cluster.local:11211"
+  php-cookie-domain: ".staging.goodoverlord.com"

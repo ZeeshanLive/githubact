@@ -1,0 +1,140 @@
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: xero-v1
+  namespace: {K8_NAMESPACE}
+  labels:
+    app: xero-v1
+spec:
+  replicas: {K8_POD_REPLICAS}
+  selector:
+    matchLabels:
+      app: xero-v1
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+  template:
+    metadata:
+      labels:
+        app: xero-v1
+    spec:
+      terminationGracePeriodSeconds: 30
+      volumes:
+      - name: app-code
+        emptyDir: {}
+      containers:
+      - name: php
+        image: 639947087795.dkr.ecr.eu-west-2.amazonaws.com/xero-v1:{RELEASE_TAG}
+        imagePullPolicy: Always
+        env:
+        - name: ENVIRONMENT
+          value: {APP_ENVIRONMENT}
+        - name: DEBUG
+          value: "false"
+        - name: PHP_OPCACHE_ENABLED
+          value: "true"
+        - name: PHP_DISPLAY_ERRORS
+          value: "off"
+        - name: PHP_MEMCACHE_SAVE_PATH
+          valueFrom:
+            configMapKeyRef:
+              name: xero-v1
+              key: php-memcache-save-path
+        - name: PHP_COOKIE_DOMAIN
+          valueFrom:
+            configMapKeyRef:
+              name: xero-v1
+              key: php-cookie-domain
+        - name: DB_HOST
+          valueFrom:
+            configMapKeyRef:
+              name: xero-v1
+              key: db-host
+        - name: DB_USER
+          valueFrom:
+            configMapKeyRef:
+              name: xero-v1
+              key: db-user
+        - name: DB_NAME
+          valueFrom:
+            configMapKeyRef:
+              name: xero-v1
+              key: db-name
+        - name: DB_PASS
+          valueFrom:
+            secretKeyRef:
+              name: xero-v1
+              key: xero-db-password
+        - name: AWS_ACCESS_KEY
+          valueFrom:
+            secretKeyRef:
+              name: xero-v1
+              key: aws-access-key-id
+        - name: AWS_SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              name: xero-v1
+              key: aws-secret-access-key
+        - name: XERO_API_CERT_PRIVATE_KEY_PATH
+          value: "/var/www/html/src/Resources/certs/xero_api.pem"
+        - name: XERO_API_CERT_PUBLIC_KEY_PATH
+          value: "/var/www/html/src/Resources/certs/xero_api.cer"
+        - name: XERO_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: xero-v1
+              key: xero-api-key
+              optional: true
+        - name: XERO_API_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: xero-v1
+              key: xero-api-secret
+              optional: true
+        volumeMounts:
+        - name: app-code
+          mountPath: /app
+        lifecycle:
+          postStart:
+            exec:
+              command: ["/bin/sh", "-c", "cp -r /var/www/html/. /app"]
+          preStop:
+            exec:
+              command: ["graceful-stop.sh"]
+      - name: nginx
+        image: 639947087795.dkr.ecr.eu-west-2.amazonaws.com/nginx:1.15-v7
+        imagePullPolicy: Always
+        readinessProbe:
+          httpGet:
+            path: /?op=health
+            port: 443
+            scheme: HTTPS
+            httpHeaders:
+            - name: Host
+              value: {APP_HOST}
+          initialDelaySeconds: 30
+          periodSeconds: 5
+          timeoutSeconds: 30
+        livenessProbe:
+          httpGet:
+            path: /?op=health
+            port: 443
+            scheme: HTTPS
+            httpHeaders:
+            - name: Host
+              value: {APP_HOST}
+          initialDelaySeconds: 30
+          periodSeconds: 5
+          timeoutSeconds: 30
+        ports:
+        - containerPort: 443
+        - containerPort: 80
+        volumeMounts:
+        - name: app-code
+          mountPath: /var/www/html
+        lifecycle:
+          preStop:
+            exec:
+              command: ["graceful-stop.sh"]

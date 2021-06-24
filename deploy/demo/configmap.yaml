@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: xero-v1
+  namespace: demo
+data:
+  db-host: "aurora-mysql-prod-rds.cluster-ctj46comalql.eu-west-1.rds.amazonaws.com"
+  db-user: "xero_demo"
+  db-name: "payments_demo"
+  xero-api-key: "QYH4FQOUCEJ1STIJWEBTKKIQJSLEFJ"
+  xero-api-secret: "JPNRF3QRL6XVF70JSGIISSNVZXFW33"
+  php-memcache-save-path: "memcache-v1.demo.svc.cluster.local:11211"
+  php-cookie-domain: ".demo.goodlord.co"

@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: xero-v1
+  namespace: default
+data:
+  db-host: "aurora-mysql-prod-rds.cluster-ctj46comalql.eu-west-1.rds.amazonaws.com"
+  db-user: "xero_prod"
+  db-name: "payments"
+  payment-alert-recipients: "mike@goodlord.co,matt.chatters@goodlord.co"
+  php-memcache-save-path: "memcache-v1.default.svc.cluster.local:11211"
+  php-cookie-domain: ".goodlord.co"

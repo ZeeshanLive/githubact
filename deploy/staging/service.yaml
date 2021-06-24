@@ -1,0 +1,33 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: xero-v1
+  namespace: default
+  labels:
+    k8s-app: xero-v1
+  annotations:
+    service.beta.kubernetes.io/aws-load-balancer-ssl-ports: "443"
+    service.beta.kubernetes.io/aws-load-balancer-backend-protocol: "https"
+    service.beta.kubernetes.io/aws-load-balancer-ssl-cert: "arn:aws:acm:eu-west-1:905608974496:certificate/9bb3a0e0-c111-4202-a7a4-5da629be443a"
+    service.beta.kubernetes.io/aws-load-balancer-connection-idle-timeout: "300"
+    service.beta.kubernetes.io/aws-load-balancer-internal: "true"
+spec:
+  type: LoadBalancer
+  selector:
+    app: xero-v1
+  ports:
+  - port: 443
+    protocol: TCP
+    name: https
+  - port: 80
+    protocol: TCP
+    name: http
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: memcache-xero
+  namespace: default
+spec:
+  type: ExternalName
+  externalName: v1-staging.mjd20w.cfg.euw1.cache.amazonaws.com
