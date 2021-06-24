@@ -14,7 +14,7 @@ jobs:
       - name: Check out repository code
         uses: actions/checkout@v2
       - run: ls
-      - run: mv deploy/deployment.yaml.dist ../deploy/deployment.yaml
+      - run: mv deploy/deployment.yaml.dist deploy/deployment.yaml
       - run: mv deploy/staging/configmap.yaml ../deploy/configmap.yaml
       - run: mv deploy/staging/service.yaml ../deploy/service.yaml
       - run: sed -i.bak "s/$K8_NAMESPACE/default/g" ../deploy/deployment.yaml
