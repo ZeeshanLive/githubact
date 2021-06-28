@@ -83,13 +83,13 @@ jobs:
   #     - run: echo $RELEASE_TAG > deploy/version
   self-hosted:
     runs-on: gem
-      steps:
-        - run: export RELEASE_TAG=$GITHUB_ACTION
-        - name: Check out repository code
-          uses: actions/checkout@v2
-        - run: ls
-        - run: mkdir test
-        - run: pwd
+    steps:
+      - run: export RELEASE_TAG=$GITHUB_ACTION
+      - name: Check out repository code
+        uses: actions/checkout@v2
+      - run: ls
+      - run: mkdir test
+      - run: pwd
   # ecr-login:
   #   runs-on: ubuntu-latest
   #   env:
@@ -128,4 +128,5 @@ jobs:
   #     - run: aws --version
   #       shell: bash
   #     - run: aws s3 ls
+
 
